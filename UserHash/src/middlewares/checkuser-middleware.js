@@ -1,5 +1,7 @@
 export const checkUser = (req, res, next) => {
-    console.log(req.cookies);
-    if (req.cookies && req.cookies.user) res.locals.user = req.cookies.user;
+    if (req.session && req.session.user) {
+        res.locals.user = req.session.user.login;
+        res.locals.email = req.session.user.email;
+    }
     next();
 };
