@@ -1,0 +1,13 @@
+{{> header title="Login"}}
+<form action="/api/user" method="POST">
+    <div>
+        <label for="login">Логин:</label>
+        <input type="text" name="login" id="login" required>
+    </div>
+    <div>
+        <label for="password">Пароль:</label>
+        <input type="password" name="password" id="password" required>
+    </div>
+    <button type="submit">Авторизоваться</button>
+</form>
+{{> footer}}
