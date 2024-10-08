@@ -20,6 +20,11 @@
         <li class="nav-item"><a class="nav-link" href="/user/signin">Authorization</a></li>
         {{/if}}
     </div>
-    {{#if user}}<div>Hello {{user}}! Your email: {{email}} <a href="/user/logout">Logout</a></div>{{/if}}
+    {{#if user}}
+      <div class="d-flex align-items-center">
+        <img src="{{avatarUrl}}" alt="{{user}}" class="rounded-circle me-2" style="width: 30px; height: 30px;">
+        Hello {{user}}! Your email: {{email}} <a href="/user/logout" class="ms-2">Logout</a>
+      </div>
+    {{/if}}
   </div>
 </nav>

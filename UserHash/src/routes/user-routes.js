@@ -1,4 +1,6 @@
 import { Router } from "express";
+import { authUser } from "../middlewares/authuser-middleware.js";
+import { createUser } from "../middlewares/createuser-middleware.js";
 
 export const userRoutes = Router();
 
@@ -21,6 +23,7 @@ userRoutes.route("/signup").get((req, res) => {
     req.session.user = {
         login: req.body.login,
         email: req.body.email,
+        avatarUrl: req.file ? `./public/avatar/${req.file.filename}` : './public/avatar/default.png'
     };
     res.redirect("/");
 });
