@@ -8,6 +8,7 @@ import { siteRoutes } from "./routes/site-routes.js";
 import { userRoutes } from "./routes/user-routes.js";
 import { checkUser } from "./middlewares/checkuser-middleware.js";
 import { accessControl } from './middlewares/accesscontrol-middleware.js';
+import { newsRoutes } from "./routes/news-routes.js";
 
 const PORT = process.env.PORT || 3000, server = express();
 const hbs = exphbs.create({
@@ -33,6 +34,7 @@ server.set("view engine", "hbs");
 server.set("views", path.join("src", "views"));
 server.use(siteRoutes);
 server.use("/user", userRoutes);
+server.use("/news", newsRoutes);
 server.listen(PORT, () =>
     console.log(`Сервер работает на http://localhost:${PORT}`)
 );
