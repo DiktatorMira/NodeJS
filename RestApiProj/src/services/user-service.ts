@@ -1,23 +1,19 @@
-import { User } from '../models/users';
+import { User } from '../models/User';
 import bcrypt from 'bcryptjs';
 
 export const users: User[] = [];
 
-export const registerUser = (username: string, password: string): User => {
-    const existingUser = users.find(user => user.username === username);
+export const registerUser = async (username: string, password: string): Promise<User> => {
+    const existingUser = await User.findOne({ where: { username } });
     if (existingUser) throw new Error('Пользователь с таким именем уже существует');
 
     const hashedPassword = bcrypt.hashSync(password, 10);
-    const newUser: User = {
-        id: users.length + 1,
+    const newUser = await User.create({
         username,
         password: hashedPassword,
-    };
-
-    users.push(newUser);
+    });
     return newUser;
 };
-
-export const findUserByUsername = (username: string): User | undefined => {
-    return users.find(user => user.username === username);
+export const findUserByUsername = async (username: string): Promise<User | null> => {
+    return await User.findOne({ where: { username } });
 };
