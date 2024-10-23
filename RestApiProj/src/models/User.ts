@@ -1,23 +1,26 @@
-import { Table, Column, Model, DataType, ForeignKey, BelongsTo } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
 import { Role } from './Role';
+import { Message } from './Message';
+import { Advertisement } from './Advertisement';
+import { PasswordReset } from './PasswordReset';
 
-@Table export class User extends Model {
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
-    username!: string;
+@Table({ tableName: 'Users', timestamps: false })
+export class User extends Model {
+    @Column({ type: DataType.INTEGER, allowNull: false, primaryKey: true, autoIncrement: true })
+    user_id!: number;
 
-    @Column({
-        type: DataType.STRING,
-        allowNull: false,
-    })
-    password!: string;
+    @ForeignKey(() => Role) @Column({ type: DataType.INTEGER, allowNull: false })
+    role_id!: number;
 
-    @ForeignKey(() => Role)
-    @Column(DataType.INTEGER)
-    roleId!: number;
+    @Column(DataType.STRING) email!: string;
+    @Column(DataType.STRING) hash_pass!: string;
+    @Column(DataType.STRING) name!: string;
+    @Column(DataType.STRING) avatar!: string;
+    @Column(DataType.DATE) created_date!: Date;
+    @Column(DataType.DATE) last_activity!: Date;
+    @Column({ type: DataType.BOOLEAN, defaultValue: false }) status!: boolean;
 
-    @BelongsTo(() => Role)
-    role!: Role;
+    @HasMany(() => Message) messages!: Message[];
+    @HasMany(() => Advertisement) advertisements!: Advertisement[];
+    @HasMany(() => PasswordReset) passwords_reset!: PasswordReset[];
 }
