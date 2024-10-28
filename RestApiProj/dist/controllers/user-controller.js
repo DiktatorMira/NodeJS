@@ -1,11 +1,12 @@
-import { Request, Response } from 'express';
-import { User } from '../models/user-model';
-import { Role } from '../models/role-model';
-
-export const createUser = async (req: Request, res: Response): Promise<void> => {
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.deleteUser = exports.updateUser = exports.getUser = exports.createUser = void 0;
+const user_model_1 = require("../models/user-model");
+const role_model_1 = require("../models/role-model");
+const createUser = async (req, res) => {
     try {
         const { role_id, email, hash_pass, name, avatar } = req.body;
-        const newUser = await User.create({
+        const newUser = await user_model_1.User.create({
             role_id,
             email,
             hash_pass,
@@ -16,27 +17,29 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             status: true
         });
         res.status(201).json(newUser);
-    } catch (error) {
+    }
+    catch (error) {
         res.status(500).json({ message: 'Ошибка при создании пользователя', error });
     }
 };
-
-export const getUser = async (req: Request, res: Response): Promise<void> => {
+exports.createUser = createUser;
+const getUser = async (req, res) => {
     try {
-        const user_id = req.params.id, user = await User.findByPk(user_id, { include: [Role] });
-
-        if (user) res.status(200).json(user);
-        else res.status(404).json({ message: 'Пользователь не найден!' });
-    } catch (error) {
+        const user_id = req.params.id, user = await user_model_1.User.findByPk(user_id, { include: [role_model_1.Role] });
+        if (user)
+            res.status(200).json(user);
+        else
+            res.status(404).json({ message: 'Пользователь не найден!' });
+    }
+    catch (error) {
         res.status(500).json({ message: 'Ошибка при получении пользователя', error });
     }
 };
-
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
+exports.getUser = getUser;
+const updateUser = async (req, res) => {
     try {
         const { role_id, email, name, avatar, status } = req.body;
-        const user = await User.findByPk(req.params.id);
-
+        const user = await user_model_1.User.findByPk(req.params.id);
         if (user) {
             user.role_id = role_id || user.role_id;
             user.email = email || user.email;
@@ -44,24 +47,29 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
             user.avatar = avatar || user.avatar;
             user.status = status !== undefined ? status : user.status;
             user.last_activity = new Date();
-            
             await user.save();
             res.status(200).json(user);
-        } else res.status(404).json({ message: 'Пользователь не найден!' });
-    } catch (error) {
+        }
+        else
+            res.status(404).json({ message: 'Пользователь не найден!' });
+    }
+    catch (error) {
         res.status(500).json({ message: 'Ошибка при обновлении пользователя', error });
     }
 };
-
-export const deleteUser = async (req: Request, res: Response): Promise<void> => {
+exports.updateUser = updateUser;
+const deleteUser = async (req, res) => {
     try {
-        const user = await User.findByPk(req.params.id);
-        
+        const user = await user_model_1.User.findByPk(req.params.id);
         if (user) {
             await user.destroy();
             res.status(200).json({ message: 'Пользователь удален' });
-        } else res.status(404).json({ message: 'Пользователь не найден!' });
-    } catch (error) {
+        }
+        else
+            res.status(404).json({ message: 'Пользователь не найден!' });
+    }
+    catch (error) {
         res.status(500).json({ message: 'Ошибка при удалении пользователя', error });
     }
 };
+exports.deleteUser = deleteUser;

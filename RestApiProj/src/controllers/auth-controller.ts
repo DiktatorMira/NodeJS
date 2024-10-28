@@ -1,54 +1,49 @@
-import { Request, Response, NextFunction } from 'express';
-import { User } from '../models/User';
-import bcrypt from 'bcryptjs';
-import jwt from 'jsonwebtoken';
-import 'dotenv/config';
-import '../types/express';
-import { json } from 'sequelize';
+import { Request, Response, NextFunction } from "express";
+import { User } from "../models/user-model";
+import bcrypt from "bcryptjs";
+import jwt from "jsonwebtoken";
+import "dotenv/config";
 
 export class AuthController {
     static async register(req: Request, res: Response, next: NextFunction): Promise<any> {
         try {
-            const { email, password, name } = req.body;
-            const existingUser = await User.findOne({ where: { email } });
-            if (existingUser)  return res.status(400).json({ message: 'Пользователь с таким email уже существует!' });
+            const { email, password, name } = req.body, existingUser = await User.findOne({ where: { email } });
+            if (existingUser) return res.status(400).json({ message: "Пользователь с таким email уже существует!" });
 
-            const hash_pass = await bcrypt.hash(password, 10);
-            const user = await User.create({
+            const hash_pass = await bcrypt.hash(password, 10), user = await User.create({
                 email,
                 hash_pass,
                 name,
                 created_date: new Date(),
                 last_activity: new Date(),
             });
-            return res.status(201).json({ message: 'Пользователь успешно зарегистрирован', user });
+            return res.status(201).json({ message: "Пользователь успешно зарегистрирован", user });
         } catch (error) { next(error); }
     }
-
+    
     static async login(req: Request, res: Response, next: NextFunction): Promise<any> {
         try {
-            const { email, password } = req.body;
-            const user = await User.findOne({ where: { email } });
-            if (!user) return res.status(400).json({ message: 'Неверные email или пароль' });
+            const { email, password } = req.body, user = await User.findOne({ where: { email } });
+            if (!user) return res.status(400).json({ message: "Неверные email или пароль" });
             const isMatch = await bcrypt.compare(password, user!.hash_pass);
-            if (!isMatch) return res.status(400).json({ message: 'Неверные email или пароль' });
+            if (!isMatch) return res.status(400).json({ message: "Неверные email или пароль" });
 
             const token = jwt.sign(
                 { user_id: user.user_id, email: user.email },
                 process.env.JWT_SECRET as string,
-                { expiresIn: '1h' }
+                { expiresIn: "1h" }
             );
-            return res.json({ message: 'Успешная аутентификация', token });
+            return res.json({ message: "Успешная аутентификация", token });
         } catch (error) { next(error); }
     }
 
     static verifyToken(req: Request, res: Response, next: NextFunction): any {
-        const token = req.headers['authorization'];
-        if (!token) return res.status(401).json({ message: 'Токен не предоставлен!' });
-        if (!process.env.JWT_SECRET) throw new Error('JWT_SECRET не задан!');
+        const token = req.headers["authorization"];
+        if (!token) return res.status(401).json({ message: "Токен не предоставлен!" });
+        if (!process.env.JWT_SECRET) throw new Error("JWT_SECRET не задан!");
 
         jwt.verify(token, process.env.JWT_SECRET, (err: any, decoded: any) => {
-            if (err) return res.status(401).json({ message: 'Неверный токен!' });
+            if (err) return res.status(401).json({ message: "Неверный токен!" });
             req.user = decoded;
             next();
         });

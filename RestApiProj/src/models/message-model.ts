@@ -1,6 +1,6 @@
 import { Model, Table, Column, DataType, ForeignKey } from 'sequelize-typescript';
-import { User } from './User';
-import { Advertisement } from './Advertisement';
+import { User } from './user-model';
+import { Advertisement } from './ad-model';
 
 @Table({ tableName: 'Messages', timestamps: false })
 export class Message extends Model {
