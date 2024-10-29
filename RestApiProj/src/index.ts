@@ -9,14 +9,11 @@ const app = express();
 app.use(express.json());
 app.use("/users", userRouter);
 app.use("/auth", authRouter);
-connection
-  .sync()
-  .then(() => {
+connection.sync().then(() => {
     app.listen(process.env.PORT, () => {
-      console.log(`Сервер запущен на порту ${process.env.PORT}`);
+        console.log(`Сервер запущен на порту ${process.env.PORT}`);
     });
-  })
-  .catch((error) => console.log("Ошибка подключения к базе данных:", error));
+}).catch((error) => console.log("Ошибка подключения к базе данных:", error));
 
 // npx tsc -init - создание tsconfig.json
 // npx tsc - создание dist
