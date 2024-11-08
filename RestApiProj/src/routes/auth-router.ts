@@ -1,4 +1,4 @@
-import { Router, Request, Response } from 'express';
+import { Router } from 'express';
 import { AuthController } from '../controllers/auth-controller';
 import { PasswordResetController } from '../controllers/passReset-controller';
 
@@ -8,3 +8,8 @@ authRouter.post('/register', AuthController.register);
 authRouter.post('/login', AuthController.login);
 authRouter.post('/request-password-reset', PasswordResetController.requestPasswordReset);
 authRouter.post('/reset-password', PasswordResetController.resetPassword);
+authRouter.post('/', PasswordResetController.create);
+authRouter.get('/', PasswordResetController.getAll);
+authRouter.get('/:id', PasswordResetController.getById);
+authRouter.put('/:id', PasswordResetController.update);
+authRouter.delete('/:id', PasswordResetController.delete);

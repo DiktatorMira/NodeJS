@@ -1,6 +1,7 @@
 import { Request, Response } from 'express';
 import { User } from '../models/user-model';
 import { Role } from '../models/role-model';
+import { redisClient } from '../config/redis';
 
 export const createUser = async (req: Request, res: Response): Promise<void> => {
     try {
@@ -15,12 +16,12 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
             last_activity: new Date(),
             status: true
         });
+        await redisClient.del('user:all');
         res.status(201).json(newUser);
     } catch (error) {
         res.status(500).json({ message: 'Ошибка при создании пользователя', error });
     }
 };
-
 export const getUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const user_id = req.params.id, user = await User.findByPk(user_id, { include: [Role] });
@@ -31,7 +32,6 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'Ошибка при получении пользователя', error });
     }
 };
-
 export const updateUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const { role_id, email, name, avatar, status } = req.body;
@@ -52,7 +52,6 @@ export const updateUser = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ message: 'Ошибка при обновлении пользователя', error });
     }
 };
-
 export const deleteUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const user = await User.findByPk(req.params.id);
