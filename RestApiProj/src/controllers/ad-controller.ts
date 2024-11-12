@@ -1,16 +1,31 @@
 import { Request, Response } from 'express';
 import { Advertisement } from '../models/ad-model';
 import { redisClient } from '../config/redis';
+import { upload } from '../middlewares/uppload-middleware';
 
 export class AdvertisementController {
     static async create(req: Request, res: Response) {
-        try {
-            const advertisement = await Advertisement.create(req.body);
-        await redisClient.del('ads:all');
-        res.status(201).json(advertisement);
-        } catch (error) {
-            res.status(500).json({ message: 'Ошибка при создании объявления', error });
-        }
+        upload.array('images')(req, res, async (err) => {
+            if (err) return res.status(400).json({ error: err.message });
+            try {
+                const { title, description, price, location, user_id, category_id } = req.body;
+                const imagePaths = req.files ? (req.files as Express.Multer.File[]).map(file => file.path) : [];
+                const advertisement = await Advertisement.create({
+                    title,
+                    description,
+                    price,
+                    location,
+                    user_id: parseInt(user_id),
+                    category_id: parseInt(category_id),
+                    upload_date: new Date(),
+                    status: false,
+                    images: imagePaths
+                });
+                res.status(201).json(advertisement);
+            } catch (error) {
+                res.status(500).json({ error: (error as Error).message });
+            }
+        });
     }
     static async getAll(req: Request, res: Response) {
         try {
