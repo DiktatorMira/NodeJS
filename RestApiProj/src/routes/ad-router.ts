@@ -1,10 +1,11 @@
 import { Router } from 'express';
 import { AdvertisementController } from '../controllers/ad-controller';
+import { verifyAdmin } from '../middlewares/auth-middleware';
 
 export const advertisementRouter = Router();
 
-advertisementRouter.post('/', AdvertisementController.create);
+advertisementRouter.post('/', verifyAdmin, AdvertisementController.create);
 advertisementRouter.get('/', AdvertisementController.getAll);
 advertisementRouter.get('/:id', AdvertisementController.getById);
-advertisementRouter.put('/:id', AdvertisementController.update);
+advertisementRouter.put('/:id', verifyAdmin, AdvertisementController.update);
 advertisementRouter.delete('/:id', AdvertisementController.delete);

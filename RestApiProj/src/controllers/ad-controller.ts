@@ -27,7 +27,7 @@ export class AdvertisementController {
             }
         });
     }
-    static async getAll(req: Request, res: Response) {
+    static async getAll(req: Request, res: Response) : Promise<any> {
         try {
             const cacheKey = 'ads:all', cachedAds = await redisClient.get(cacheKey);
             if (cachedAds) return res.status(200).json(JSON.parse(cachedAds));
@@ -43,12 +43,27 @@ export class AdvertisementController {
         const advertisement = await Advertisement.findByPk(req.params.id);
         advertisement ? res.json(advertisement) : res.status(404).json({ message: 'Объявление не найдено!' });
     }
-    static async update(req: Request, res: Response) {
-        const [updated] = await Advertisement.update(req.body, { where: { id: req.params.id } });
-        updated ? res.json(await Advertisement.findByPk(req.params.id)) : res.status(404).json({ message: 'Объявление не найдено!' });
+    static async update(req: Request, res: Response) : Promise<any> {
+        try {
+            const { adId, newStatus } = req.body;
+            const ad = await Advertisement.findByPk(adId);
+            if (!ad) return res.status(404).json({ message: 'Объявление не найдено' });
+            ad.status = newStatus;
+            await ad.save();
+            return res.status(200).json({ message: 'Статус объявления обновлен', ad });
+        } catch (error) {
+            return res.status(500).json({ message: 'Ошибка сервера', error });
+        }
     }
-    static async delete(req: Request, res: Response) {
-        const deleted = await Advertisement.destroy({ where: { id: req.params.id } });
-        deleted ? res.status(204).send() : res.status(404).json({ message: 'Объявление не найдено!' });
+    static async delete(req: Request, res: Response) : Promise<any> {
+        try {
+            const { adId } = req.params;
+            const ad = await Advertisement.findByPk(adId);
+            if (!ad) return res.status(404).json({ message: 'Объявление не найдено' });
+            await ad.destroy();
+            return res.status(200).json({ message: 'Объявление удалено' });
+        } catch (error) {
+            return res.status(500).json({ message: 'Ошибка сервера', error });
+        }
     }
 }

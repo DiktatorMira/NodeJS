@@ -32,10 +32,11 @@ export const getUser = async (req: Request, res: Response): Promise<void> => {
         res.status(500).json({ message: 'Ошибка при получении пользователя', error });
     }
 };
-export const updateUser = async (req: Request, res: Response): Promise<void> => {
+export const updateUser = async (req: Request, res: Response) : Promise<any> => {
     try {
         const { role_id, email, name, avatar, status } = req.body;
         const user = await User.findByPk(req.params.id);
+        if (!user) return res.status(404).json({ message: 'Пользователь не найден' });
 
         if (user) {
             user.role_id = role_id || user.role_id;
