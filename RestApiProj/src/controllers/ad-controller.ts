@@ -2,6 +2,7 @@ import { Request, Response } from 'express';
 import { Advertisement } from '../models/ad-model';
 import { redisClient } from '../config/redis';
 import { upload } from '../middlewares/uppload-middleware';
+import { Op } from 'sequelize';
 
 export class AdvertisementController {
     static async create(req: Request, res: Response) {
@@ -45,12 +46,19 @@ export class AdvertisementController {
     }
     static async update(req: Request, res: Response) : Promise<any> {
         try {
-            const { adId, newStatus } = req.body;
-            const ad = await Advertisement.findByPk(adId);
+            const { id } = req.params;
+            const { title, description, price, location, category_id } = req.body;
+            const ad = await Advertisement.findByPk(id);
             if (!ad) return res.status(404).json({ message: 'Объявление не найдено' });
-            ad.status = newStatus;
+
+            ad.title = title || ad.title;
+            ad.description = description || ad.description;
+            ad.price = price || ad.price;
+            ad.location = location || ad.location;
+            ad.category_id = category_id || ad.category_id;
+
             await ad.save();
-            return res.status(200).json({ message: 'Статус объявления обновлен', ad });
+            res.json(ad);
         } catch (error) {
             return res.status(500).json({ message: 'Ошибка сервера', error });
         }
@@ -64,6 +72,35 @@ export class AdvertisementController {
             return res.status(200).json({ message: 'Объявление удалено' });
         } catch (error) {
             return res.status(500).json({ message: 'Ошибка сервера', error });
+        }
+    }
+    static async search(req: Request, res: Response) {
+        try {
+            const { keyword, category, minPrice, maxPrice, location } = req.query;
+            const whereClause: any = {};
+    
+            if (keyword) whereClause.title = { [Op.like]: `%${keyword}%` };
+            if (category) whereClause.category_id = category;
+            if (minPrice) whereClause.price = { [Op.gte]: parseFloat(minPrice as string) };
+            if (maxPrice) whereClause.price = { [Op.lte]: parseFloat(maxPrice as string) };
+            if (location) whereClause.location = { [Op.like]: `%${location}%` };
+    
+            const ads = await Advertisement.findAll({ where: whereClause });
+            res.json(ads);
+        } catch (error) {
+            res.status(500).json({ message: 'Ошибка при поиске объявлений', error });
+        }
+    }
+    static async markAsSold(req: Request, res: Response) : Promise<any> {
+        try {
+            const { id } = req.params, ad = await Advertisement.findByPk(id);
+            if (!ad) return res.status(404).json({ message: 'Объявление не найдено' });
+    
+            ad.is_sold = true;
+            await ad.save();
+            res.json({ message: 'Объявление отмечено как проданное' });
+        } catch (error) {
+            res.status(500).json({ message: 'Ошибка при обновлении статуса', error });
         }
     }
 }

@@ -12,7 +12,7 @@ export class RoleController {
             res.status(500).json({ message: 'Ошибка при создании роли', error });
         }
     }
-    static async getAll(req: Request, res: Response) {
+    static async getAll(req: Request, res: Response) : Promise<any> {
         try {
             const cacheKey = 'role:all', cachedAds = await redisClient.get(cacheKey);
             if (cachedAds) return res.status(200).json(JSON.parse(cachedAds));

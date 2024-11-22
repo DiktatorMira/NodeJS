@@ -2,10 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { User } from '../models/user-model';
 import { Role } from '../models/role-model';
 
-export const verifyAdmin = async (req: Request, res: Response, next: NextFunction) : Promise<any> => {
-    const userId = req.userId;
+export const verifyAdmin = async (req: Request, res: Response, next: NextFunction): Promise<any> => {
+    const userId = (req as any).userId;
     if (!userId) return res.status(401).json({ message: 'Неавторизованный доступ!' });
-
     try {
         const user = await User.findByPk(userId), role = await Role.findByPk(user?.role_id);
 
