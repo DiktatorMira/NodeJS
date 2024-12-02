@@ -6,6 +6,7 @@ import { advertisementRouter } from "./routes/ad-router";
 import { categoryRouter } from "./routes/category-router";
 import { messageRouter } from "./routes/message-router";
 import { authRouter } from "./routes/auth-router";
+import { Role } from "./models/role-model";
 import "dotenv/config";
 
 const app = express();
@@ -17,7 +18,7 @@ app.use("/advertisements", advertisementRouter);
 app.use("/category", categoryRouter);
 app.use("/message", messageRouter);
 app.use("/auth", authRouter);
-connection.sync().then(() => {
+connection.sync().then(async () => {
     app.listen(process.env.PORT, () => {
         console.log(`Сервер запущен на порту ${process.env.PORT}`);
     });
@@ -26,3 +27,4 @@ connection.sync().then(() => {
 // npx tsc -init - создание tsconfig.json
 // npx tsc - создание dist
 // npm start - запуск проекта(команда прописана в package.json)
+// npx ts-node src/index.ts - запуск без dist

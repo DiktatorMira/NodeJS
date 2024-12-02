@@ -22,6 +22,16 @@ export const createUser = async (req: Request, res: Response): Promise<void> => 
         res.status(500).json({ message: 'Ошибка при создании пользователя', error });
     }
 };
+export const getUsers = async (req: Request, res: Response): Promise<void> => {
+    try {
+        const users = await User.findAll();
+
+        if (users.length > 0)  res.status(200).json(users);
+        else res.status(404).json({ message: 'Пользователи не найдены' });
+    } catch (error) {
+        res.status(500).json({ message: 'Ошибка при получении пользователей', error });
+    }
+};
 export const getUser = async (req: Request, res: Response): Promise<void> => {
     try {
         const user_id = req.params.id, user = await User.findByPk(user_id, { include: [Role] });

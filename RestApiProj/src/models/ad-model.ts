@@ -19,7 +19,7 @@ export class Advertisement extends Model {
     @Column(DataType.STRING) location!: string;
     @Column(DataType.DATE) upload_date!: Date;
     @Column({ type: DataType.BOOLEAN, defaultValue: false }) status!: boolean;
-    @Column({ type: DataType.ARRAY(DataType.STRING), allowNull: true }) images!: string;
+    @Column({ type: DataType.JSON, allowNull: true }) images!: string[]; 
     @Column({ type: DataType.BOOLEAN, defaultValue: false }) is_sold!: boolean;
 
     @HasMany(() => Message) messages!: Message[];

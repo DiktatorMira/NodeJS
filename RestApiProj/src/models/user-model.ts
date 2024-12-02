@@ -1,4 +1,4 @@
-import { Model, Table, Column, DataType, ForeignKey, HasMany } from 'sequelize-typescript';
+import { Model, Table, Column, DataType, ForeignKey, BelongsTo, HasMany } from 'sequelize-typescript';
 import { Role } from './role-model';
 import { Message } from './message-model';
 import { Advertisement } from './ad-model';
@@ -19,6 +19,8 @@ export class User extends Model {
     @Column(DataType.DATE) created_date!: Date;
     @Column(DataType.DATE) last_activity!: Date;
     @Column({ type: DataType.BOOLEAN, defaultValue: false }) status!: boolean;
+
+    @BelongsTo(() => Role) role!: Role;
 
     @HasMany(() => Message) messages!: Message[];
     @HasMany(() => Advertisement) advertisements!: Advertisement[];

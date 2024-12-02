@@ -1,5 +1,6 @@
 import { Request, Response, NextFunction } from "express";
 import { User } from "../models/user-model";
+import { Role } from "../models/role-model";
 import bcrypt from "bcryptjs";
 import jwt from "jsonwebtoken";
 import "dotenv/config";
@@ -7,18 +8,23 @@ import "dotenv/config";
 export class AuthController {
     static async register(req: Request, res: Response, next: NextFunction): Promise<any> {
         try {
-            const { email, password, name } = req.body, existingUser = await User.findOne({ where: { email } });
+            const { email, password, name, role_id  } = req.body, existingUser = await User.findOne({ where: { email } }), role = await Role.findByPk(role_id);
             if (existingUser) return res.status(400).json({ message: "Пользователь с таким email уже существует!" });
+            if (!role) return res.status(400).json({ message: "Указанная роль не существует!" });
 
             const hash_pass = await bcrypt.hash(password, 10), user = await User.create({
                 email,
                 hash_pass,
                 name,
+                role_id,
                 created_date: new Date(),
                 last_activity: new Date(),
             });
             return res.status(201).json({ message: "Пользователь успешно зарегистрирован", user });
-        } catch (error) { next(error); }
+        } catch (error) {
+            console.error("Ошибка при регистрации:", error);
+            next(error); 
+        }
     }
     
     static async login(req: Request, res: Response, next: NextFunction): Promise<any> {

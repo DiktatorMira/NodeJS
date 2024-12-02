@@ -25,15 +25,17 @@ export class CategoryController {
         }
     }
     static async getById(req: Request, res: Response) {
-        const category = await Category.findByPk(req.params.id);
+        const category = await Category.findByPk(+req.params.id);
         category ? res.json(category) : res.status(404).json({ message: 'Категория не найдена!' });
     }
     static async update(req: Request, res: Response) {
-        const [updated] = await Category.update(req.body, { where: { id: req.params.id } });
-        updated ? res.json(await Category.findByPk(req.params.id)) : res.status(404).json({ message: 'Категория не найдена!' });
+        const [updated] = await Category.update(req.body, { where: { category_id: +req.params.id } });
+        await redisClient.del('category:all');
+        updated ? res.json(await Category.findByPk(+req.params.id)) : res.status(404).json({ message: 'Категория не найдена!' });
     }
     static async delete(req: Request, res: Response) {
-        const deleted = await Category.destroy({ where: { id: req.params.id } });
+        const deleted = await Category.destroy({ where: { category_id: +req.params.id } });
+        await redisClient.del('category:all');
         deleted ? res.status(204).send() : res.status(404).json({ message: 'Категория не найдена!' });
     }
 }

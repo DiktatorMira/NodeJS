@@ -1,20 +1,44 @@
-### Получение списка пользователей
-GET http://localhost:3000/api/users
+### Получить все объявления
+GET http://localhost:3000/api/advertisements
 Content-Type: application/json
 
-### Создание нового пользователя
-POST http://localhost:3000/api/users
+###
+
+### Создать объявление
+POST http://localhost:3000/api/advertisements
 Content-Type: application/json
+
 {
-  "name": "Test User",
-  "email": "testuser@example.com",
-  "password": "password123"
+  "user_id": 1,
+  "category_id": 2,
+  "title": "Продам велосипед",
+  "description": "Почти новый, использовался 3 месяца.",
+  "price": 15000,
+  "location": "Москва",
+  "upload_date": "2024-11-24T10:00:00.000Z",
+  "status": false,
+  "images": ["image1.jpg", "image2.jpg"]
 }
 
-### Обновление пользователя
-PUT http://localhost:3000/api/users/1
+###
+
+### Получить объявление по ID
+GET http://localhost:3000/api/advertisements/1
 Content-Type: application/json
+
+###
+
+### Обновить объявление
+PUT http://localhost:3000/api/advertisements/1
+Content-Type: application/json
+
 {
-  "name": "Updated User",
-  "email": "updateduser@example.com"
+  "title": "Продам велосипед (цена снижена)",
+  "price": 14000
 }
+
+###
+
+### Удалить объявление
+DELETE http://localhost:3000/api/advertisements/1
+Content-Type: application/json
