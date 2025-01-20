@@ -4,7 +4,7 @@ import { verifyAdmin } from '../middlewares/auth-middleware';
 
 export const advertisementRouter = Router();
 
-advertisementRouter.post('/', verifyAdmin, AdvertisementController.create);
+advertisementRouter.post('/', AdvertisementController.create);
 advertisementRouter.get('/', AdvertisementController.getAll);
 advertisementRouter.get('/:id', AdvertisementController.getById);
 advertisementRouter.put('/:id', verifyAdmin, AdvertisementController.update);

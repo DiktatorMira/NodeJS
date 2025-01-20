@@ -28,13 +28,9 @@ export class AdvertisementController {
             }
         });
     }
-    static async getAll(req: Request, res: Response) : Promise<any> {
+    static async getAll(req: Request, res: Response): Promise<any> {
         try {
-            const cacheKey = 'ads:all', cachedAds = await redisClient.get(cacheKey);
-            if (cachedAds) return res.status(200).json(JSON.parse(cachedAds));
-
             const ads = await Advertisement.findAll();
-            await redisClient.setEx(cacheKey, 3600, JSON.stringify(ads));
             res.status(200).json(ads);
         } catch (error) {
             res.status(500).json({ message: 'Ошибка при получении объявлений', error });
